@@ -1,0 +1,533 @@
+/* styles.css */
+@import url("https://use.typekit.net/zey5ijj.css");
+
+:root {
+  --color-main: #a05453;
+  --color-main-darker: #7b4b3d;
+  --color-bg: #fde7da;
+  --slider-yellow: #fad653;
+  --slider-red: #f85457;
+  --slider-cream: #fdf4e5;
+  --slider-shadow: rgba(0, 0, 0, 0.1);
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: var(--color-bg);
+  padding: 20px; /* guarantees gutters on tiny widths */
+  overflow-x: hidden;
+  font-family: "chinchilla", sans-serif;
+}
+
+/* ── Контейнер ── */
+
+.app {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* gap: 22px; */
+
+  padding: 16px 0 44px; /* let body padding handle side gutters */
+  background: transparent;
+}
+
+/* ── Чайник ── */
+.teapot-wrap {
+  width: min(466px, calc(100%)); /* parent-based, not viewport-based */
+  aspect-ratio: 1 / 1;
+  height: auto;
+  position: relative;
+  display: grid;
+  place-items: center;
+  /* margin-bottom: 10px; */
+
+  --tea-scale: 1;
+  --tea-x: 0px;
+  --tea-y: 0px;
+  /* --tea-y: 18px; */
+}
+
+/* круглый фон за чайником */
+.teapot-bg {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #f7efe4;
+  opacity: 0.95;
+  pointer-events: none;
+}
+
+/* пар */
+.steam-svg {
+  position: absolute;
+  top: 60px;
+  left: 70%;
+  transform: translateX(-10%);
+  width: 90px;
+  height: 200px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* PNG чайник */
+
+.teapot-img {
+  position: absolute;
+  left: 52%;
+  top: 47%;
+
+  width: 70%;
+  height: auto;
+
+  transform-origin: 50% 60%;
+  transform: translate(calc(-50% + var(--tea-x)), calc(-50% + var(--tea-y)))
+    scale(var(--tea-scale));
+
+  transition: transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  user-select: none;
+}
+
+/* Пар */
+.steam {
+  opacity: 0;
+  stroke-dasharray: 60;
+  stroke-dashoffset: 60;
+}
+
+.steaming .steam-svg {
+  opacity: 1;
+}
+
+.steaming .steam.s1 {
+  animation: steamRise 2.4s ease-in-out infinite 0s;
+}
+.steaming .steam.s2 {
+  animation: steamRise 2.4s ease-in-out infinite 0.6s;
+}
+.steaming .steam.s3 {
+  animation: steamRise 2.4s ease-in-out infinite 1.2s;
+}
+
+@keyframes steamRise {
+  0% {
+    opacity: 0;
+    stroke-dashoffset: 60;
+  }
+  15% {
+    opacity: 0.7;
+  }
+  60% {
+    opacity: 0.5;
+    stroke-dashoffset: 0;
+  }
+  100% {
+    opacity: 0;
+    stroke-dashoffset: -20;
+  }
+}
+
+/* Вздох */
+.sigh {
+  animation: sigh 400ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes sigh {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.teapot-img.sigh {
+  animation: sigh 400ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+/* ── Заголовок ── */
+.title {
+  font-family: "chinchilla", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 32px;
+  line-height: 1;
+  letter-spacing: 0;
+  text-align: center;
+  margin: 0;
+  color: var(--color-main);
+  margin-top: 28px;
+  margin-bottom: 8px;
+}
+
+/* ── Отображение времени ── */
+.time-display {
+  font-family: "chinchilla", sans-serif;
+  font-size: 72px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--color-main-darker, #7b4b3d);
+
+  margin-bottom: 24px;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+}
+@media (max-width: 380px) {
+  .time-display {
+    font-size: 60px;
+  }
+}
+
+.time-display.zero-warn {
+  color: #b85c38;
+}
+
+/* ── Слайдер ── */
+/* ---------------- Slider (custom track + dots + donut) ---------------- */
+
+.slider-section {
+  width: min(1000px, 100%);
+  /* margin-bottom: 24px; */
+  transition: opacity 0.3s ease;
+}
+
+.slider-section.disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.slider-wrap {
+  position: relative;
+  padding-bottom: 44px; /* room for the numbers below the track */
+  --track-h: 36px;
+  --thumb: 47px;
+}
+
+/* Gradient pill track */
+.slider-track {
+  height: var(--track-h);
+  border-radius: 999px;
+  background: linear-gradient(90deg, #fad653, #f85457);
+}
+
+/* Keep the input for dragging, but hide its visuals completely */
+#minuteSlider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 3;
+}
+
+/* accessible focus ring (since input is invisible) */
+#minuteSlider:focus-visible + .ticks,
+#minuteSlider:focus-visible {
+  outline: 2px solid rgba(160, 84, 83, 0.55);
+  outline-offset: 8px;
+  border-radius: 999px;
+}
+
+/* Dots + numbers row */
+.ticks {
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 4px; /* vertical alignment of dot row */
+  padding: 0 22px; /* keeps ends away from rounded corners */
+  z-index: 2;
+  pointer-events: none;
+}
+
+.ticks span {
+  position: relative;
+  width: 0; /* anchor by center */
+  text-align: center;
+
+  /* numbers styling (you’ll refine later) */
+  font-family: "chinchilla", sans-serif;
+  font-size: 32px;
+  font-weight: 400;
+  color: #a05453;
+
+  transform: translateY(46px); /* push numbers below the track */
+}
+
+/* Inactive dots */
+.ticks span::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -37px; /* bring dot back onto the track */
+  transform: translateX(-50%);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(253, 244, 229, 0.9);
+  box-shadow:
+    0px 2px 4px -2px rgba(0, 0, 0, 0.1),
+    0px 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Active tick dot disappears (donut replaces it) */
+.ticks span.is-active::before {
+  opacity: 0;
+}
+
+/* Donut thumb */
+.slider-thumb {
+  position: absolute;
+  top: calc((var(--track-h) - var(--thumb)) / 2); /* <- centers it */
+  left: 0;
+  width: var(--thumb);
+  height: var(--thumb);
+  border-radius: 50%;
+  z-index: 4;
+  pointer-events: none;
+
+  background: radial-gradient(
+    circle at center,
+    transparent 0 12px,
+    rgba(253, 244, 229, 0.95) 12px 22px,
+    rgba(253, 244, 229, 0.95) 22px 100%
+  );
+
+  box-shadow:
+    0 2px 4px -2px rgba(0, 0, 0, 0.1),
+    0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* ── Статус ── */
+.status {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #8a7160;
+  height: 20px;
+  margin-bottom: 22px;
+  transition: opacity 0.3s ease;
+}
+
+/* ── Кнопки ── */
+/* Make the controls block have a consistent width */
+.controls {
+  width: min(350px, 100%); /* matches your teapot circle / slider width */
+  align-items: stretch; /* key: children can be full width */
+  row-gap: 24px;
+  column-gap: 12px;
+}
+
+/* Bottom row also fills the same width */
+.secondary-btns {
+  width: 100%;
+  display: flex;
+  gap: 12px;
+}
+/* Two buttons share the row equally */
+.secondary-btns .btn {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  white-space: nowrap; /* prevents wrapping */
+  font-size: 24px;
+}
+
+.btn {
+  cursor: pointer;
+  border: none;
+  border-radius: 88px;
+  /* letter-spacing: 0.12em; */
+  transition: all 0.2s ease;
+  outline: none;
+  font-family: "chinchilla", sans-serif;
+  font-size: 24px;
+}
+
+.btn:focus-visible {
+  outline: 2px solid #8a6a52;
+  outline-offset: 3px;
+}
+
+/* Primary button fills the whole controls width */
+.btn-primary {
+  background: #5c3d26;
+  font-family: "chinchilla", sans-serif;
+  color: var(--color-bg);
+  font-size: 24px;
+  font-weight: 400;
+  /* padding: 22px 105px; */
+  width: 100%;
+  padding: 22px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.btn-primary:hover {
+  background: #4a3020;
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-primary.running {
+  background: #7a5c3e;
+  cursor: default;
+  pointer-events: none;
+}
+
+.btn-primary.done {
+  background: #4a6640;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--color-main-darker);
+  font-size: 11px;
+  font-weight: 400;
+  padding: 22px 0;
+  border: 1px solid var(--color-main-darker);
+}
+
+.btn-secondary:not(:disabled):hover {
+  background: rgba(90, 60, 30, 0.06);
+  border-color: #8a6a52;
+  border: none;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-main-darker);
+  font-size: 11px;
+  font-weight: 400;
+  /* border: 1.5px solid transparent; */
+}
+
+.btn-ghost:hover {
+  background: rgba(90, 60, 30, 0.06);
+  border-color: #8a6a52;
+  border: none;
+}
+
+/* default: desktop */
+.range-captions {
+  display: none;
+}
+
+/* mobile */
+@media (max-width: 600px) {
+  .ticks {
+    display: none;
+  }
+
+  .range-captions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 32px;
+    /* letter-spacing: 0.08em; */
+    opacity: 0.6;
+  }
+  .slider-wrap {
+    padding-bottom: 0px;
+  }
+
+  /* make slider more touch-friendly */
+  input[type="range"] {
+    height: 40px;
+  }
+
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 14px;
+    border-radius: 999px;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    width: 28px;
+    height: 28px;
+    margin-top: -7px;
+  }
+}
+.teapot-mask {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden; /* <-- this is the clip */
+}
+
+/* keep bg filling the mask */
+.teapot-bg {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+.teapot-img {
+  z-index: 1;
+}
+.steam-svg {
+  z-index: 2;
+}
+.teapot-bg {
+  z-index: 0;
+}
+
+/* tiny tick animation */
+#timeDisplay.is-ticking {
+  animation: timeTick 120ms ease-out;
+}
+
+@keyframes timeTick {
+  from {
+    opacity: 0.92;
+    transform: translateY(0.5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #timeDisplay.is-ticking {
+    animation: none;
+  }
+}
+button:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
